@@ -3,7 +3,7 @@ import type { AWS } from '@serverless/typescript';
 const serverlessConfiguration: AWS = {
   service: 'certificate-ignite',
   frameworkVersion: '3',
-  plugins: ['serverless-esbuild'],
+  plugins: ['serverless-esbuild', 'serverless-offline'],
   provider: {
     name: 'aws',
     runtime: 'nodejs14.x',
@@ -17,7 +17,20 @@ const serverlessConfiguration: AWS = {
     },
   },
   // import the function via paths
-  functions: {},
+  functions: {
+    hello: {
+      handler: "src/functions/hello.handler",
+      events: [
+        {
+          http: {
+            path: "hello",
+            method: "get",
+            cors: true
+          }
+        }
+      ]
+    }
+  },
   package: { individually: true },
   custom: {
     esbuild: {
