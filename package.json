@@ -7,7 +7,7 @@
     "dev": "serverless offline",
     "dynamodb:start": "serverless dynamodb start",
     "dynamodb:install": "serverless dynamodb install",
-    "deploy": "serverless deploy -v"
+    "deploy": "serverless deploy --verbose"
   },
   "engines": {
     "node": ">=14.15.0"
