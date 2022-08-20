@@ -2,7 +2,8 @@ import { APIGatewayProxyHandler } from "aws-lambda"
 import * as handlebars from "handlebars"
 import { join } from "path"
 import { readFileSync } from "fs"
-import * as dayjs from "dayjs"
+import dayjs from "dayjs"
+import chromium from "chrome-aws-lambda"
 
 import { document } from "../utils/dynamodbClient"
 
@@ -56,6 +57,26 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   }
 
   const content = await compile(data)
+
+  const browser = await chromium.puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath,
+  })
+
+  const page = await browser.newPage()
+
+  await page.setContent(content)
+
+  const pdf = await page.pdf({
+    format: "a4",
+    printBackground: true,
+    landscape: true,
+    preferCSSPageSize: true,
+    path: process.env.IS_OFFLINE ? "./certificate.pdf" : null
+  })
+
+  await browser.close()
 
   return {
     statusCode: 201,
